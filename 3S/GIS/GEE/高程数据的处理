@@ -1,4 +1,6 @@
 ```js
+//GEE中的高程数据包含了目前比较流行的几种高程数据，包括SRTM、ASTER GDEM、GMTED2000等。通过搜索框我们可以查到相关的数据，通过Import导入到GEE工程中就可以直接使用了。
+
 //Terrain Dem products
 //dem
 var dem = ee.Image(srtm);
