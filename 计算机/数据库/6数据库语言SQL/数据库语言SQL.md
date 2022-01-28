@@ -3,6 +3,7 @@
 ### 1974年，由Boyce和Chamberlin提出
 ### 1975~1979，IBM San Jose Research Lab的关系数据库管理系统原型System R实施了这种语言
 ### SQL-86是第一个SQL标准
+
 ### SQL-89、SQL-92(SQL2)、SQL-99(SQL3)
 ## 非过程化语言
 ### SQL语言进行数据库操作时，只需要提出“做什么”，不需要指明“怎么做”。“怎么做”是由DBMS来完成
@@ -266,3 +267,128 @@
 * 收回权限——Revoke 
 * 收回权限——Deny 
 *XMind: ZEN - Trial Version*
+
+```sql
+-- 模式定义
+Create schema "s-t" authorization WANG;
+
+-- 模式删除
+Drop schema "s-t" cascade或retrict;
+
+-- 创建表
+Create table student(name varchar(20),age int,sex char(1));
+
+-- 删除表
+Drop table student cascade; #cascade 如果表有外键、视图、触发器的话，也会强行删除。
+
+-- 修改
+Alter table student ADD date;    # 给表student增加入学日期date
+Alter table student alter column age int; # 将年龄的数据剧类型改为int
+
+-- 建立索引
+Create unique|cluster index Stuano on student(sno);  #cluster:聚簇索引 unique:唯一索引
+
+-- 修改索引
+Alter index Scno rename to SCSno;   # 把SC表中的Scno索引改为SCSno
+
+-- 删除索引
+Drop index SCSno;
+
+-- 查询
+select * from student;
+select name 姓名 from student; #  把在结果中姓名替代name进行显示
+
+-- 结果去掉重复
+select ditinct name from student;
+
+-- 查询结果加条件
+select * from student where age>20;
+select * from course where price between 21 and 50;    # 价格在21到50中间
+select * from student where name like '%华';     # %可以替代多个字符；_只能替代一个字符；
+select * from student order by number;        #升序
+select * from student order by number desc;   #降序
+
+-- 聚集函数
+-- count：个数
+-- sum：总和
+-- min：最小值
+-- max：最大值
+-- avg：平均值
+
+select count(name) from student;
+select count(distinct name) from student;
+select avg(price) from course;
+select max(price) from course;
+select min(price) from course;
+
+-- 分组查询
+-- 利用group by分组，如果需要筛选，则使用Having。
+select sex from student group by sex;
+select sex from student group by sex having sex='男';
+
+-- 连接
+-- 以where为关键词
+select * from edu_c ec,edu_c_d ecd where ec.id=ecd.id;   # 不同表连接
+select * from edu_c ec1.edu_c ec2 where ec1.id=ec2.id;   # 自身连接
+
+-- 外连接
+select * from edu_c ec left outer join edu_c_d ecd on ec.id=ecd.id;   # 左连接
+
+-- 多表查询
+select * from edu_c ec,edu_c_d ecd,edu_c_h ech where ec.id=ecd.id and ec.id=ech.id;
+
+-- 嵌套查询
+select * from edu_c ec
+where teacher_id in
+(select teacher_id from edu_c
+where teacher_id=10 or teacher_id=0);
+
+-- 带有exists的子查询
+-- not exists 如果后面的子查询没有值，返回1，反之返回0。
+
+-- 例：没有一门课是他不选修的
+select name
+from student
+where not exists
+(select *
+from Crouse
+where not exists
+(select *
+from SC
+where Sno=student.Sno
+and Cno=Course.Cno));
+
+-- 集合查询
+select * from student where Sdept='CS'
+union
+select * from student where age<=19;      #并
+
+select * from student where Sdept='CS'
+intersect
+select * from student where age<=19;      #交
+
+-- 数据插入
+insert into student(id,name,age,sex) values (1,'李华',20,'男');
+
+-- 数据修改
+update student set age=35,sec='男' where id=11; #更新id=11的年龄和性别
+
+-- 数据删除
+delete from student where id=1;
+
+-- 创建视图
+create view IS_student
+AS
+select * from student
+where id=18;
+
+-- with check option 可以防止用户对不属于视图范围的操作进行拒绝。
+
+-- 删除视图
+drop view IS_student cascade;
+
+-- 查询视图
+select age from IS_student where age<20;
+
+```
+
